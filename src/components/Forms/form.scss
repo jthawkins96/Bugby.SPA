@@ -5,9 +5,15 @@ form {
 }
 
 .error-message {
+    opacity: 1;
     color:red;
+    text-align:center;
 }
 
 button {
     margin-bottom: 1rem;
+}
+
+span {
+    opacity: 0;
 }

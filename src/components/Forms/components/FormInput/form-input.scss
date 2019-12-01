@@ -75,12 +75,13 @@
     .error-message {
         margin-top:0.25rem;
         color:red;
-        opacity:0;
+        opacity:1;
         transition:0.1s;
         font-size:0.75rem;
+        text-align:left;
+    }
 
-        &.true {
-            opacity:1;
-        }
+    span {
+        opacity: 0;
     }
 }

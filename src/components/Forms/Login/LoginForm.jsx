@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
@@ -7,21 +7,34 @@ import FormInput from '../components/FormInput/FormInput';
 import '../form.scss';
 import { selectLoginErrorState } from '../../../redux/auth/authSelectors';
 import authActions from '../../../redux/auth/authActions';
+import formValidator, { validationTypes } from '../Validator/validator';
 
 const LoginForm = props => {
-    var usernameRef = useRef();
-    var passwordRef = useRef();
+
+    const inputRefs = {
+        username: useRef(),
+        password: useRef()
+    }
+
+    const [validationObject, setValidationObject] = useState(formValidator.generateValidationObject(inputRefs));
+    
+    const submitForm = (e) => {
+        e.preventDefault();
+
+        const validatedObject = formValidator.validate(inputRefs);
+
+        setValidationObject(validatedObject);
+
+        if(validatedObject.isValid)
+            props.startLogin(inputRefs.username.current.value, inputRefs.password.current.value, props.history);
+    }
 
     return (
-        <form>
-            <FormInput label="Username" reference={ usernameRef } type="username" id="username" />
-            <FormInput label="Password" reference={ passwordRef } type="password" id="password" />
-            <button type="button" 
-                className='btn btn-success' 
-                onClick={ () => props.startLogin(usernameRef.current.value, passwordRef.current.value, props.history) }>
-                Login
-            </button>
-            { props.hasLoginError ? <span className="error-message">Invalid username or password.</span> : null }
+        <form onSubmit={ e => submitForm(e) } noValidate>
+            <FormInput validators={ [validationTypes.required] } validationMessage={ validationObject.username.errorMessage } label='Username' reference={ inputRefs.username } type='username' id='username' />
+            <FormInput validators={ [validationTypes.required] } validationMessage={ validationObject.password.errorMessage } label='Password' reference={ inputRefs.password } type='password' id='password' />
+            <button type='submit' className='btn btn-success'>Login</button>
+            <span className={ props.hasLoginError ? 'error-message' : undefined }>Invalid username or password.</span>
         </form>
     );
 }
